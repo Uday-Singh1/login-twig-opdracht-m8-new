@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gebruikerspagina</title>
+</head>
+<body>
+    {% block content %}
+
+    <h1>Welkom, {{ gebruikersnaam }}!</h1>
+    <p>Dit is de gebruikerspagina.</p>
+    <h2>Afbeeldingen:</h2>
+    {% for afbeelding in afbeeldingen %}
+        <img src="{{ afbeelding }}" alt="Afbeelding">
+    {% endfor %}
+        {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+{% extends "welcome.twig" %}
+
+{% block content %}
+    <h1>Welcome, {{ user.getUsername() }}</h1>
+    <img src="data:image/jpeg;base64,{{ base64Image }}" alt="Profile Image">
+    <p>This is additional content.</p>
+{% endblock %}

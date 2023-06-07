@@ -1,0 +1,81 @@
+<?php
+ session_start();
+
+
+require  __DIR__ . '/Twig/vendor/autoload.php';
+
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+
+class User {
+    private $username;
+    private $password;
+    private $image;
+    private $db;
+
+    public function __construct($username, $password, $image, $db) {
+        $this->username = $username;
+        $this->password = $password;
+        $this->image = $image;
+        $this->db = $db;
+    }
+
+    public function getUsername() {
+        return $this->username;
+    }
+
+    public function getPassword() {
+        return $this->password;
+    }
+
+    public function getImage() {
+        return $this->image;
+    }
+
+    public function renderUserPage() {
+        $loader = new FilesystemLoader(__DIR__ . '/templates');
+        $twig = new Environment($loader);
+
+        $base64Image = base64_encode($this->image);
+
+        echo $twig->render('user.twig', [
+            'user' => $this,
+            'base64Image' => $base64Image,
+        ]);
+    }
+
+    public static function login($username, $password, $db) {
+        var_dump($db);
+        $query = 'SELECT gebruikersnaam,wachtwoord FROM gebruikers WHERE gebruikersnaam = :username AND wachtwoord = :password';
+        $params = array(':username' => $username, ':password' => $password);
+        var_dump($params);
+        $stmt = $db->prepare($query);
+        $stmt->execute($params);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if (count($result) > 0) {
+            $row = $result[0];
+            $image = $row['afbeelding'];
+            $loggedInUser = new User($username, $password, $image, $db);
+            $loggedInUser->renderUserPage();
+            return $loggedInUser;
+        } else {
+            return false;
+        }
+    }
+
+    public function getRandomImage() {
+        $images = [
+            'spider.jpeg',
+            'kat.jpeg',
+            'locales.jpeg'
+        ];
+
+        $randomImage = $images[array_rand($images)];
+        $imagePath = '' . $randomImage;
+        $base64Image = base64_encode(file_get_contents($imagePath));
+
+        return 'data:image/jpeg;base64,' . $base64Image;
+    }
+}
+?>
